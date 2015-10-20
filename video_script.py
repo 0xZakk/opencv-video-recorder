@@ -1,4 +1,4 @@
-import os, sys, uuid, cv2
+import os, sys, uuid, cv2, time
 
 try:
     path_to_sd = sys.argv[1]
@@ -16,9 +16,20 @@ if not os.path.exists(video_folder):
 
 cap = cv2.VideoCapture(0)
 
-out = cv2.VideoWriter(video_folder + '/' + str(video_id) + '.mp4', cv2.cv.CV_FOURCC('F', 'M', 'P', '4'), 25, (int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH )),int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT ))), True)
+video_path = video_folder + '/' + str(video_id) + '.mp4'
+codec = cv2.cv.CV_FOURCC('m', 'p', '4', 'v')
+fps = 16
+width = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH))
+height = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT))
+size = (width, height)
+color = True
 
+out = cv2.VideoWriter(video_path, codec, fps, size, color)
+
+end_time = time.time() + 60 * 5
 while (cap.isOpened()):
+    if time.time() > end_time:
+        break
     ret, frame = cap.read()
     if ret==True:
         out.write(frame)
@@ -29,6 +40,6 @@ while (cap.isOpened()):
     else:
         break
 
-cap.realease()
-out.realease()
+out.release()
+cap.release()
 cv2.destroyAllWindows()
